@@ -3,6 +3,8 @@
 import { useActionState, useId, useState, useTransition } from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Field, FieldGroup, FieldLabel, FieldError } from '@/components/ui/field';
 import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupTextarea } from '@/components/ui/input-group';
@@ -12,6 +14,7 @@ import type { MutationResult, PreparationComment, PreparationSnapshot } from './
 import { cn } from '@/lib/utils';
 
 type CheckAction = (scope: string, itemId: string, completed: boolean) => Promise<MutationResult>;
+type EditAction = (commentId: string, previous: MutationResult, form: FormData) => Promise<MutationResult>;
 type CommentAction = (topic: string, previous: MutationResult, form: FormData) => Promise<MutationResult>;
 
 function CheckItem({ scope, item, checked, disabled, changeAction }: {
@@ -41,8 +44,50 @@ function CheckItem({ scope, item, checked, disabled, changeAction }: {
   </div>;
 }
 
-function Opinion({ topic, title, itemTitle, comments, writeAction }: {
-  topic: string; title: string; itemTitle: string; comments: PreparationComment[]; writeAction: CommentAction;
+function OpinionEditor({ comment, editAction, onClose }: {
+  comment: PreparationComment; editAction: EditAction; onClose: () => void;
+}) {
+  const id = useId();
+  const [body, setBody] = useState(comment.body);
+  const [state, action, pending] = useActionState(async (previous: MutationResult, form: FormData) => {
+    try {
+      const result = await editAction(comment.id, previous, form);
+      if (result.saved) onClose();
+      return result;
+    } catch { return { saved: false, error: '수정 내용을 저장하지 못했어요. 다시 시도해 주세요.' }; }
+  }, { saved: false, error: '' });
+  return <form action={action} aria-label="의견 수정">
+    <FieldGroup className="gap-2">
+      <Field data-invalid={Boolean(state.error)}>
+        <FieldLabel htmlFor={id} className="sr-only">의견 수정</FieldLabel>
+        <Textarea id={id} name="body" rows={2} maxLength={2000} required autoFocus disabled={pending}
+          value={body} onChange={event => setBody(event.target.value)} aria-invalid={Boolean(state.error)}
+          className="max-h-64 min-h-20 rounded-lg text-sm md:text-sm" />
+        <FieldError>{state.error}</FieldError>
+      </Field>
+      <div className="flex justify-end gap-2">
+        <Button type="button" variant="outline" size="sm" className="min-h-9 rounded-md" disabled={pending} onClick={onClose}>취소</Button>
+        <Button type="submit" size="sm" className="min-h-9 rounded-md" disabled={pending || !body.trim() || body.trim() === comment.body}>{pending ? '저장 중…' : '저장'}</Button>
+      </div>
+    </FieldGroup>
+  </form>;
+}
+
+function OpinionEntry({ comment, editAction }: { comment: PreparationComment; editAction: EditAction }) {
+  const [editing, setEditing] = useState(false);
+  return <li id={`news-${comment.id}`} data-news-id={comment.id} data-news-kind="opinion" className="flex items-start gap-2">
+    <span className="shrink-0 pt-0.5 text-xs font-semibold leading-relaxed text-muted-foreground">{comment.author}</span>
+    <div className="min-w-0 flex-1">
+      {editing ? <OpinionEditor comment={comment} editAction={editAction} onClose={() => setEditing(false)} /> : <div className="flex items-start gap-2">
+        <p className="min-w-0 flex-1 whitespace-pre-wrap break-words text-sm leading-relaxed">{comment.body}</p>
+        {comment.canEdit && <Button type="button" variant="ghost" size="xs" className="shrink-0 rounded-md text-muted-foreground" onClick={() => setEditing(true)} aria-label={`${comment.author} 의견 수정`}>수정</Button>}
+      </div>}
+    </div>
+  </li>;
+}
+
+function Opinion({ topic, title, itemTitle, comments, writeAction, editAction }: {
+  topic: string; title: string; itemTitle: string; comments: PreparationComment[]; writeAction: CommentAction; editAction: EditAction;
 }) {
   const id = useId();
   const [body, setBody] = useState('');
@@ -57,10 +102,7 @@ function Opinion({ topic, title, itemTitle, comments, writeAction }: {
   return <section aria-label={`${label} 의견`} className="flex min-w-0 flex-col gap-3">
     {(topic === 'places' || topic === 'food') && <h3 className="text-sm font-semibold">{title}</h3>}
     {comments.length > 0 && <ul className="flex flex-col gap-2" aria-label={`${label} 의견 목록`}>
-      {comments.map(comment => <li key={comment.id} id={`news-${comment.id}`} data-news-id={comment.id} data-news-kind="opinion" className="flex items-start gap-2">
-        <span className="shrink-0 pt-0.5 text-xs font-semibold leading-relaxed text-muted-foreground">{comment.author}</span>
-        <p className="min-w-0 whitespace-pre-wrap break-words text-sm leading-relaxed">{comment.body}</p>
-      </li>)}
+      {comments.map(comment => <OpinionEntry key={comment.id} comment={comment} editAction={editAction} />)}
     </ul>}
     <form action={formAction}>
       <FieldGroup className="gap-2">
@@ -82,9 +124,9 @@ function Opinion({ topic, title, itemTitle, comments, writeAction }: {
   </section>;
 }
 
-export function PreparationList({ snapshot, changeAction, writeAction }: {
+export function PreparationList({ snapshot, changeAction, writeAction, editAction }: {
   focusedTopic?: string;
-  snapshot: PreparationSnapshot; changeAction: CheckAction; writeAction: CommentAction;
+  snapshot: PreparationSnapshot; changeAction: CheckAction; writeAction: CommentAction; editAction: EditAction;
 }) {
   return <div className="flex flex-col gap-8">
     <section aria-labelledby="shared-checks" className="flex flex-col gap-3">
@@ -97,7 +139,7 @@ export function PreparationList({ snapshot, changeAction, writeAction }: {
         <CardContent className="flex flex-col gap-4 pl-12">
           <Separator />
           {item.topics.map(topic => <Opinion key={topic.id} topic={topic.id} title={topic.title} itemTitle={item.title}
-            comments={snapshot.comments.filter(comment => comment.topic === topic.id)} writeAction={writeAction} />)}
+            comments={snapshot.comments.filter(comment => comment.topic === topic.id)} writeAction={writeAction} editAction={editAction} />)}
         </CardContent>
       </Card>)}
     </section>

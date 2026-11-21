@@ -1,5 +1,5 @@
 export type MutationResult = { error: string; saved: boolean };
-export type PreparationComment = { id: string; topic: string; author: string; body: string; createdAt: string };
+export type PreparationComment = { id: string; topic: string; author: string; canEdit: boolean; body: string; createdAt: string };
 export type PreparationSnapshot = {
   canEditShared: boolean;
   familyLabel: string;
