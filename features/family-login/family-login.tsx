@@ -99,6 +99,7 @@ export function FamilyLogin() {
                       <InputGroupAddon align="inline-end"><InputGroupButton onClick={() => setVisible(!visible)} aria-label={visible ? '암호 숨기기' : '암호 보기'} aria-pressed={visible}>{visible ? '숨기기' : '보기'}</InputGroupButton></InputGroupAddon>
                     </InputGroup>
                     <FieldDescription id="pin-help">가족에게 전달받은 암호를 입력해 주세요.</FieldDescription>
+                    <p className="text-sm font-bold text-foreground">아래 버튼을 눌러주세요.</p>
                   </Field>
                   {notice && <Alert><AlertDescription>로그인 연결을 준비 중이에요. 현재는 이름 선택과 암호 입력 화면을 확인할 수 있어요.</AlertDescription></Alert>}
                   <Button className={styles.submit} type="submit" disabled={!name || pin.length !== 4}>{loginLabels[name] ?? '엄마! 잘탈게! ✈️'}</Button>
