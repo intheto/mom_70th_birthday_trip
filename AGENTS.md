@@ -34,6 +34,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 # 브라우저 검증
 
+- 화면을 만들거나 검토하는 작업은 `DESIGN.md`를 먼저 읽는다.
 - 실행 중인 앱의 런타임 검증은 `next-dev-loop` 스킬(`/_next/mcp` + `agent-browser`)로 한다. 브라우저 확인을 요구하는 다른 스킬(`implement`, `build-prototype` 등)도 같은 도구를 쓴다.
 - Playwright(`e2e/*.spec.ts`, `bun run test:e2e`)는 반복 실행할 E2E 테스트 코드 전용이다. 런타임 검증을 Playwright 스크립트로 대신하지 않는다.
 
@@ -44,3 +45,11 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 - 자동 코드 리뷰는 최대 1회, 가장 낮은 강도(`code-review low`)로만 돌린다. 리뷰어를 못 부르면 그 사실만 적고 완료로 본다.
 - 지적 중 스펙의 수용 기준을 깨거나 주 경로가 실제로 깨지는 것만 고친다. 나머지는 `docs/follow-ups/`에 한 줄로 남긴다. 재리뷰는 하지 않는다.
 - 스펙이 요구하지 않은 보안 하드닝·엣지케이스·성능 방어는 범위 밖이다.
+
+<!-- BEGIN:supabase-agent-context -->
+## Supabase 공식 문서
+
+- Supabase 작업을 시작할 때 `.agents/skills/supabase/SKILL.md`를 읽는다. DB 구조·SQL·RLS 작업은 `.agents/skills/supabase-postgres-best-practices/SKILL.md`도 읽는다. Claude Code는 `.claude/skills/`의 동일한 복사본을 사용한다.
+- 매 작업 시작 시 https://supabase.com/changelog.md 와 관련 https://supabase.com/docs 문서를 새로 조회하고 실제 설치된 SDK·CLI 버전 및 연결된 프로젝트 설정과 대조한다. 조회가 막히면 그 사실을 밝히며 저장된 문서만으로 현재 동작을 단정하지 않는다.
+- 공식 context의 재조회는 작업 시작 시 수행한다. 스킬 갱신에는 위 프로젝트의 `--copy` 설치 정책을 적용한다.
+<!-- END:supabase-agent-context -->
