@@ -71,7 +71,7 @@ function Opinion({ topic, title, itemTitle, comments, writeAction }: {
               value={body} onChange={event => setBody(event.target.value)} aria-invalid={Boolean(state.error)}
               placeholder={topic === 'places' ? '가고 싶은 장소는?' : topic === 'food' ? '먹고 싶은 음식은?' : '의견을 남겨주세요'} className="max-h-32 min-h-10 min-w-0 text-sm md:text-sm" />
             <InputGroupAddon align="inline-end" className="shrink-0">
-              <InputGroupButton type="submit" size="sm" variant="default" disabled={pending || !body.trim()}>{pending ? '저장 중…' : '의견 남기기'}</InputGroupButton>
+              <InputGroupButton type="submit" size="sm" variant="default" className="rounded-md" disabled={pending || !body.trim()}>{pending ? '저장 중…' : '의견 남기기'}</InputGroupButton>
             </InputGroupAddon>
           </InputGroup>
           <FieldError>{state.error}</FieldError>
