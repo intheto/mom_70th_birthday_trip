@@ -30,6 +30,7 @@ test('댓글을 펼치는 조작 없이 작성자와 내용을 바로 읽고 답
     { id: 'comment-2', author: '김영욱', body: '우리 즐겁게 다녀와요', createdAt: '2026-11-21T02:00:00Z' },
   ]} />);
   expect(screen.getByRole('list', { name: '댓글 목록' })).toBeVisible();
+  expect(screen.getByRole('heading', { name: '댓글 2' })).toBeVisible();
   expect(screen.getByText('함께 떠나서 좋아요')).toBeVisible();
   expect(screen.getByText('우리 즐겁게 다녀와요')).toBeVisible();
   expect(screen.queryByRole('button', { expanded: false })).not.toBeInTheDocument();

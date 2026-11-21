@@ -1,6 +1,7 @@
 'use client';
 
 import { useActionState, useId, useState } from 'react';
+import { MessageSquare } from 'lucide-react';
 import { Field, FieldGroup, FieldLabel, FieldError } from '@/components/ui/field';
 import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupTextarea } from '@/components/ui/input-group';
 import type { GuestbookComment, GuestbookState, WriteCommentAction } from './types';
@@ -21,7 +22,11 @@ export function GuestbookComments({ entryId, comments, name, writeAction }: {
     }
   }, { error: '', saved: false });
 
-  return <section aria-label={`${name} 님이 참여하는 댓글`} className="mt-3 flex min-w-0 flex-col gap-3">
+  return <section aria-label={`${name} 님이 참여하는 댓글`} className="mt-4 ml-3 flex min-w-0 flex-col gap-3 rounded-lg bg-muted p-3">
+    <h3 className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground">
+      <MessageSquare aria-hidden="true" className="size-3.5" />
+      댓글 <span className="font-normal">{comments.length}</span>
+    </h3>
     {comments.length > 0 && <ul aria-label="댓글 목록" className="flex flex-col gap-2">
       {comments.map(comment => <li key={comment.id} className="flex items-start gap-2">
         <strong className="shrink-0 pt-0.5 text-xs leading-relaxed text-muted-foreground">{comment.author}</strong>
@@ -32,7 +37,7 @@ export function GuestbookComments({ entryId, comments, name, writeAction }: {
       <FieldGroup className="gap-2">
         <Field data-invalid={Boolean(state.error)}>
           <FieldLabel htmlFor={id} className="sr-only">{name} 님으로 댓글 남기기</FieldLabel>
-          <InputGroup className="items-end rounded-lg has-disabled:bg-transparent has-disabled:opacity-100">
+          <InputGroup className="items-end rounded-lg bg-background has-disabled:bg-background has-disabled:opacity-100">
             <InputGroupTextarea id={id} name="body" rows={1} maxLength={500} required disabled={pending}
               value={body} onChange={event => setBody(event.target.value)} aria-invalid={Boolean(state.error)}
               placeholder="이 이야기에 답해 주세요" className="max-h-32 min-h-10 min-w-0" />

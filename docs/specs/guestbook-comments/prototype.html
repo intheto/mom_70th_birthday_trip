@@ -51,7 +51,7 @@
   Self-contained by design: no build, no framework, no network.
 -->
 <meta charset="utf-8">
-<title>방명록 · 댓글 간소화 초안</title>
+<title>방명록 · 댓글 영역 구분 초안</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
   /* ── project tokens: the project's own, or this minimal set as-is ── */
@@ -204,7 +204,9 @@ textarea::placeholder{color:var(--muted-foreground);font-size:12px}.field{displa
 
 
 <style id="compact-comments">
-.thread{padding:0;background:transparent;gap:12px;margin-top:12px;border-radius:0}
+.thread{padding:12px;background:var(--muted);gap:12px;margin:16px 0 0 12px;border-radius:8px}
+.thread-heading{display:flex;align-items:center;gap:6px;margin:0;font-size:12px;font-weight:600;color:var(--muted-foreground)}
+.thread-heading svg{width:14px;height:14px}.thread-heading span{font-weight:400}
 .comment-list{gap:8px}.reply{display:grid;grid-template-columns:max-content minmax(0,1fr);column-gap:8px;row-gap:0;border:0;padding:0}
 .reply-header{display:contents}.reply-header strong{grid-column:1;font-size:12px;font-weight:600;color:var(--muted-foreground);padding-top:2px;line-height:1.65}
 .reply-header time{display:none}.reply p{grid-column:2;font-size:14px;line-height:1.65}
@@ -351,7 +353,7 @@ function render(){
  entries.forEach(entry=>{
  const article=node('article','post');article.dataset.component='new:GuestbookPost';article.dataset.postId=entry.id;
  const by=node('div','byline');by.append(node('strong','',entry.by),node('time','',entry.time));article.append(by,node('p','message',entry.text));
- const thread=node('section','thread');thread.id='thread-'+entry.id;thread.dataset.component='new:GuestbookComments';thread.hidden=false;
+ const thread=node('section','thread');thread.id='thread-'+entry.id;thread.dataset.component='new:GuestbookComments';thread.hidden=false;const heading=node('h3','thread-heading');heading.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M4 4h16v12H9l-5 4Z"/></svg>';heading.append(document.createTextNode('댓글 '),node('span','',String(entry.comments.length)));thread.append(heading);
  if(entry.comments.length){const comments=node('div','comment-list');entry.comments.forEach(c=>{const reply=node('div','reply');const header=node('div','reply-header');header.append(node('strong','',c.by),node('time','',c.time));reply.append(header,node('p','',c.text));comments.append(reply)});thread.append(comments)}
  const form=node('form','reply-form');form.dataset.component='FieldGroup';const field=node('div','field');field.dataset.component='Field';const label=node('label','', '김영욱 님으로 댓글 남기기');label.htmlFor='reply-'+entry.id;label.className='sr-only';
  const input=node('textarea');input.id='reply-'+entry.id;input.rows=1;input.maxLength=500;input.required=true;input.placeholder='댓글을 남겨주세요';input.dataset.component='InputGroupTextarea';input.value=entry.draft||'';const count=node('p','count',input.value.length+' / 500자');const error=node('p','error','댓글을 저장하지 못했어요. 내용은 남아 있으니 다시 시도해 주세요.');error.hidden=true;error.setAttribute('role','alert');const actions=node('div','reply-actions');const button=node('button','button primary','댓글 남기기');button.type='submit';button.disabled=!input.value.trim();button.dataset.component='Button';input.oninput=()=>{entry.draft=input.value;button.disabled=!input.value.trim();input.style.height='auto';input.style.height=Math.min(96,Math.max(40,input.scrollHeight))+'px';count.textContent=input.value.length+' / 500자'};const group=node('div','reply-input-group');group.dataset.component='InputGroup';group.setAttribute('role','group');actions.dataset.component='InputGroupAddon';actions.append(button);group.append(input,actions);field.append(label,group,error);form.append(field);
