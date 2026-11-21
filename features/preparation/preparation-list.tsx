@@ -108,14 +108,14 @@ export function PreparationList({ snapshot, changeAction, writeAction, focusedTo
       <h2 id="family-checks" className="text-lg font-bold">가족 체크 리스트</h2>
       <p className="text-sm text-muted-foreground">{snapshot.familyLabel}의 준비를 함께 체크해요.</p>
       <div className="flex flex-wrap gap-3">{familyItems.map(item => <Card key={item.id} size="sm" className="max-w-full rounded-xl">
-        <CardHeader><CardTitle><CheckItem scope="family" item={item} checked={snapshot.family[item.id] ?? false} changeAction={changeAction} /></CardTitle></CardHeader>
+        <CardHeader className="[container-type:normal]"><CardTitle><CheckItem scope="family" item={item} checked={snapshot.family[item.id] ?? false} changeAction={changeAction} /></CardTitle></CardHeader>
       </Card>)}</div>
     </section>
     <section aria-labelledby="personal-checks" className="flex flex-col gap-3">
       <h2 id="personal-checks" className="text-lg font-bold">개별 체크 리스트</h2>
       <p className="text-sm text-muted-foreground">내 준비가 끝나면 체크해 주세요.</p>
       <div className="flex flex-wrap gap-3">{personalItems.map(item => <Card key={item.id} size="sm" className="max-w-full rounded-xl">
-        <CardHeader><CardTitle><CheckItem scope="personal" item={item} checked={snapshot.personal[item.id] ?? false} changeAction={changeAction} /></CardTitle></CardHeader>
+        <CardHeader className="[container-type:normal]"><CardTitle><CheckItem scope="personal" item={item} checked={snapshot.personal[item.id] ?? false} changeAction={changeAction} /></CardTitle></CardHeader>
       </Card>)}</div>
     </section>
   </div>;
