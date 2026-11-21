@@ -4,10 +4,8 @@ import { useActionState, useId, useState, useTransition } from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
-import { Button } from '@/components/ui/button';
 import { Field, FieldGroup, FieldLabel, FieldError } from '@/components/ui/field';
-import { Textarea } from '@/components/ui/textarea';
-import { Collapsible, CollapsibleTrigger, CollapsibleContent } from '@/components/ui/collapsible';
+import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupTextarea } from '@/components/ui/input-group';
 import { Separator } from '@/components/ui/separator';
 import { familyItems, personalItems, sharedItems, type CheckScope } from './catalog';
 import type { MutationResult, PreparationComment, PreparationSnapshot } from './types';
@@ -43,13 +41,11 @@ function CheckItem({ scope, item, checked, disabled, changeAction }: {
   </div>;
 }
 
-function Opinion({ topic, title, comments, writeAction, initialOpen = false }: {
-  initialOpen?: boolean;
-  topic: string; title: string; comments: PreparationComment[]; writeAction: CommentAction;
+function Opinion({ topic, title, itemTitle, comments, writeAction }: {
+  topic: string; title: string; itemTitle: string; comments: PreparationComment[]; writeAction: CommentAction;
 }) {
   const id = useId();
   const [body, setBody] = useState('');
-  const [open, setOpen] = useState(initialOpen);
   const [state, formAction, pending] = useActionState(async (previous: MutationResult, form: FormData) => {
     try {
       const result = await writeAction(topic, previous, form);
@@ -57,35 +53,36 @@ function Opinion({ topic, title, comments, writeAction, initialOpen = false }: {
       return result;
     } catch { return { saved: false, error: '의견을 저장하지 못했어요. 다시 시도해 주세요.' }; }
   }, { saved: false, error: '' });
-  return <Collapsible open={open} onOpenChange={setOpen} className="flex flex-col gap-2">
-    <CollapsibleTrigger render={<Button variant="ghost" className="min-h-10 justify-start px-0 text-sm text-primary" />}>
-      <span aria-hidden="true">▸</span>{title}{comments.length > 0 && <span className="text-muted-foreground">· {comments.length}</span>}
-    </CollapsibleTrigger>
-    <CollapsibleContent className="flex flex-col gap-4">
-      {comments.length ? <ul className="flex flex-col gap-3" aria-label={`${title} 의견 목록`}>
-        {comments.map(comment => <li key={comment.id} id={`news-${comment.id}`} data-news-id={comment.id} data-news-kind="opinion" className="flex flex-col gap-1">
-          <span className="text-xs font-semibold text-muted-foreground">{comment.author}</span>
-          <p className="whitespace-pre-wrap break-words text-sm leading-relaxed">{comment.body}</p>
-        </li>)}
-      </ul> : <p className="text-sm text-muted-foreground">첫 의견을 남겨주세요.</p>}
-      <form action={formAction}>
-        <FieldGroup className="gap-3">
-          <Field data-invalid={Boolean(state.error)}>
-            <FieldLabel htmlFor={id} className="sr-only">{title} 의견</FieldLabel>
-            <Textarea id={id} name="body" rows={3} maxLength={2000} required disabled={pending}
+  const label = topic === 'places' || topic === 'food' ? title : itemTitle;
+  return <section aria-label={`${label} 의견`} className="flex min-w-0 flex-col gap-3">
+    {(topic === 'places' || topic === 'food') && <h3 className="text-sm font-semibold">{title}</h3>}
+    {comments.length > 0 && <ul className="flex flex-col gap-2" aria-label={`${label} 의견 목록`}>
+      {comments.map(comment => <li key={comment.id} id={`news-${comment.id}`} data-news-id={comment.id} data-news-kind="opinion" className="flex items-start gap-2">
+        <span className="shrink-0 pt-0.5 text-xs font-semibold leading-relaxed text-muted-foreground">{comment.author}</span>
+        <p className="min-w-0 whitespace-pre-wrap break-words text-sm leading-relaxed">{comment.body}</p>
+      </li>)}
+    </ul>}
+    <form action={formAction}>
+      <FieldGroup className="gap-2">
+        <Field data-invalid={Boolean(state.error)}>
+          <FieldLabel htmlFor={id} className="sr-only">{label} 의견</FieldLabel>
+          <InputGroup className="items-end rounded-lg has-disabled:bg-transparent has-disabled:opacity-100">
+            <InputGroupTextarea id={id} name="body" rows={1} maxLength={2000} required disabled={pending}
               value={body} onChange={event => setBody(event.target.value)} aria-invalid={Boolean(state.error)}
-              placeholder={topic === 'places' ? '가고 싶은 장소와 이유를 나눠주세요' : topic === 'food' ? '먹고 싶은 음식이나 식당을 알려주세요' : '이 준비에 대한 의견을 남겨주세요'} className="text-sm" />
-            <FieldError>{state.error}</FieldError>
-          </Field>
-          <Button type="submit" className="min-h-10 w-fit" disabled={pending || !body.trim()}>{pending ? '저장 중…' : '의견 남기기'}</Button>
-          {state.saved && <p role="status" className="text-xs text-muted-foreground">의견을 남겼어요.</p>}
-        </FieldGroup>
-      </form>
-    </CollapsibleContent>
-  </Collapsible>;
+              placeholder={topic === 'places' ? '가고 싶은 장소는?' : topic === 'food' ? '먹고 싶은 음식은?' : '의견을 남겨주세요'} className="max-h-32 min-h-10 min-w-0 text-sm md:text-sm" />
+            <InputGroupAddon align="inline-end" className="shrink-0">
+              <InputGroupButton type="submit" size="sm" variant="default" disabled={pending || !body.trim()}>{pending ? '저장 중…' : '의견 남기기'}</InputGroupButton>
+            </InputGroupAddon>
+          </InputGroup>
+          <FieldError>{state.error}</FieldError>
+        </Field>
+        {state.saved && <p role="status" className="text-xs text-muted-foreground">의견을 남겼어요.</p>}
+      </FieldGroup>
+    </form>
+  </section>;
 }
 
-export function PreparationList({ snapshot, changeAction, writeAction, focusedTopic }: {
+export function PreparationList({ snapshot, changeAction, writeAction }: {
   focusedTopic?: string;
   snapshot: PreparationSnapshot; changeAction: CheckAction; writeAction: CommentAction;
 }) {
@@ -97,9 +94,9 @@ export function PreparationList({ snapshot, changeAction, writeAction, focusedTo
         <CardHeader><CardTitle><CheckItem scope="shared" item={item} checked={snapshot.shared[item.id] ?? false} disabled={!snapshot.canEditShared} changeAction={changeAction} /></CardTitle>
           {'description' in item && <CardDescription className="pl-8 text-sm">{item.description}</CardDescription>}
         </CardHeader>
-        <CardContent className="flex flex-col gap-2 pl-12">
+        <CardContent className="flex flex-col gap-4 pl-12">
           <Separator />
-          {item.topics.map(topic => <Opinion key={topic.id} initialOpen={focusedTopic === topic.id} topic={topic.id} title={topic.title}
+          {item.topics.map(topic => <Opinion key={topic.id} topic={topic.id} title={topic.title} itemTitle={item.title}
             comments={snapshot.comments.filter(comment => comment.topic === topic.id)} writeAction={writeAction} />)}
         </CardContent>
       </Card>)}
