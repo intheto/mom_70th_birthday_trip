@@ -7,3 +7,4 @@
 - [family-login](family-login.md) — 가족 로그인과 비밀번호 사용 방식을 정하거나 변경할 때 읽는다.
 - [app-header](app-header.md) — 로그인 이후 모든 탭의 상단 탭 제목과 공통 헤더를 구성하거나 변경할 때 읽는다.
 - [app-navigation](app-navigation.md) — 로그인 이후 공통 하단 메뉴의 위치와 본문 스크롤을 구성하거나 변경할 때 읽는다.
+- [travel-information-cards](travel-information-cards.md) — 여행 정보 카드의 순서와 날씨 정보량을 변경할 때 읽는다.
