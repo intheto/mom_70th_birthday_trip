@@ -69,8 +69,8 @@ export function FamilyLogin() {
         <div>
           <Card className={styles.card}>
             <CardHeader>
-              <CardTitle><h2 className={styles.formTitle}>효도하러 왔니?</h2></CardTitle>
-              <CardDescription className={styles.instruction}>본인 선택 후 가족 암호 입력 하시오.</CardDescription>
+              <CardTitle><h2 className={styles.formTitle}>효도하러 왔니? 🥰</h2></CardTitle>
+              <CardDescription className={styles.instruction}>아래의 사용자 정보 선택 후 로그인 하세요</CardDescription>
             </CardHeader>
             <CardContent>
               <form onSubmit={event => { event.preventDefault(); setNotice(true); }}>
