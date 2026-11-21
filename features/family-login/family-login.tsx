@@ -44,7 +44,7 @@ export function FamilyLogin() {
     <main className={styles.page}>
       <div className={styles.layout}>
         <section className={styles.hero} aria-labelledby="trip-title">
-          <p className={styles.brand}>♧ 칠순 기념 오사카 가족 여행</p>
+          <p className={styles.brand}>♧ 이정희 여사님 칠순 기념 오사카 가족 여행</p>
           <h1 id="trip-title">70년산<br />명품엄마</h1>
           <p className={styles.tagline}>항공권 값은 냈다! 나머진 알지?</p>
           <Image className={styles.mother} src="/images/family-login/premium-mom.png" width={500} height={500} alt="밝게 웃으며 손을 흔드는 파스텔풍 어머니 캐릭터" priority />
@@ -88,7 +88,7 @@ export function FamilyLogin() {
                     <FieldDescription id="pin-help">가족에게 전달받은 암호를 입력해 주세요.</FieldDescription>
                   </Field>
                   {notice && <Alert><AlertDescription>로그인 연결을 준비 중이에요. 현재는 이름 선택과 암호 입력 화면을 확인할 수 있어요.</AlertDescription></Alert>}
-                  <Button className={styles.submit} type="submit" disabled={!name || pin.length !== 4}>우리 여행, 함께 만들기</Button>
+                  <Button className={styles.submit} type="submit" disabled={!name || pin.length !== 4}>엄마! 잘탈게! ✈️</Button>
                 </FieldGroup>
               </form>
             </CardContent>
