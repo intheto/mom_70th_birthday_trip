@@ -131,6 +131,114 @@ export type Database = {
           },
         ]
       }
+      preparation_comments: {
+        Row: {
+          body: string
+          created_at: string
+          id: string
+          member_id: string
+          topic: string
+        }
+        Insert: {
+          body: string
+          created_at?: string
+          id?: string
+          member_id: string
+          topic: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          id?: string
+          member_id?: string
+          topic?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "preparation_comments_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: false
+            referencedRelation: "family_members"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      preparation_family_checks: {
+        Row: {
+          completed: boolean
+          family_id: string
+          item_id: string
+          updated_at: string
+        }
+        Insert: {
+          completed?: boolean
+          family_id: string
+          item_id: string
+          updated_at?: string
+        }
+        Update: {
+          completed?: boolean
+          family_id?: string
+          item_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "preparation_family_checks_family_id_fkey"
+            columns: ["family_id"]
+            isOneToOne: false
+            referencedRelation: "families"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      preparation_personal_checks: {
+        Row: {
+          completed: boolean
+          item_id: string
+          member_id: string
+          updated_at: string
+        }
+        Insert: {
+          completed?: boolean
+          item_id: string
+          member_id: string
+          updated_at?: string
+        }
+        Update: {
+          completed?: boolean
+          item_id?: string
+          member_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "preparation_personal_checks_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: false
+            referencedRelation: "family_members"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      preparation_shared_checks: {
+        Row: {
+          completed: boolean
+          item_id: string
+          updated_at: string
+        }
+        Insert: {
+          completed?: boolean
+          item_id: string
+          updated_at?: string
+        }
+        Update: {
+          completed?: boolean
+          item_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
