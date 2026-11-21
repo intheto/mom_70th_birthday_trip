@@ -109,6 +109,45 @@ export type Database = {
           },
         ]
       }
+      guestbook_comments: {
+        Row: {
+          body: string
+          created_at: string
+          entry_id: string
+          id: string
+          member_id: string
+        }
+        Insert: {
+          body: string
+          created_at?: string
+          entry_id: string
+          id?: string
+          member_id: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          entry_id?: string
+          id?: string
+          member_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "guestbook_comments_entry_id_fkey"
+            columns: ["entry_id"]
+            isOneToOne: false
+            referencedRelation: "guestbook_entries"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "guestbook_comments_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: false
+            referencedRelation: "family_members"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       guestbook_entries: {
         Row: {
           body: string

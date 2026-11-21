@@ -3,7 +3,8 @@
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
 import { getCurrentMember, signInFamily, signOutFamily } from '@/features/family-login/server';
-import { addGuestbookEntry } from '@/features/guestbook/server';
+import { addGuestbookEntry, addGuestbookComment } from '@/features/guestbook/server';
+import type { GuestbookState } from '@/features/guestbook';
 import type { LoginState } from '@/features/family-login';
 
 export async function loginAction(_state: LoginState, form: FormData): Promise<LoginState> {
@@ -36,5 +37,19 @@ export async function writeGuestbookAction(_state: { error: string; saved: boole
   if (signedOut) redirect('/?expired=1');
   revalidatePath('/guestbook');
   revalidatePath('/home');
+  return { error: '', saved: true };
+}
+
+export async function writeGuestbookCommentAction(entryId: string, _state: GuestbookState, form: FormData): Promise<GuestbookState> {
+  const body = String(form.get('body') ?? '').trim();
+  if (!body || body.length > 500) return { error: '댓글을 1~500자 사이로 입력해 주세요.', saved: false };
+  try {
+    const member = await getCurrentMember();
+    if (!member) return { error: '로그인 시간이 지났어요. 다시 로그인해 주세요.', saved: false };
+    await addGuestbookComment(member.id, entryId, body);
+  } catch {
+    return { error: '댓글을 저장하지 못했어요. 내용은 남아 있으니 다시 시도해 주세요.', saved: false };
+  }
+  revalidatePath('/guestbook');
   return { error: '', saved: true };
 }

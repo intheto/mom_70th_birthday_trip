@@ -16,15 +16,19 @@ export function GuestbookCompose({ name, writeAction }: {
   const [open, setOpen] = useState(false);
   const [body, setBody] = useState('');
   const [state, action, pending] = useActionState(async (previous: GuestbookState, form: FormData) => {
-    const result = await writeAction(previous, form);
-    if (result.saved) { setBody(''); setOpen(false); }
-    return result;
+    try {
+      const result = await writeAction(previous, form);
+      if (result.saved) { setBody(''); setOpen(false); }
+      return result;
+    } catch {
+      return { error: '글을 저장하지 못했어요. 입력한 내용은 남아 있으니 다시 시도해 주세요.', saved: false };
+    }
   }, { error: '', saved: false });
 
   return <>
     <Dialog open={open} onOpenChange={value => { if (!pending) setOpen(value); }}>
-      <Card>
-        <CardHeader><CardTitle>오늘은 어떤 마음인가요?</CardTitle><CardDescription>{name} 님, 가족들과 편하게 이야기를 나눠요.</CardDescription></CardHeader>
+      <Card className="rounded-xl">
+        <CardHeader><CardTitle>가족에게 전하고 싶은 말이 있나요?</CardTitle><CardDescription>{name} 님의 이름으로 남겨요.</CardDescription></CardHeader>
         <CardFooter><DialogTrigger render={<Button className="min-h-11 w-full" />}>한마디 남기기 ＋</DialogTrigger></CardFooter>
       </Card>
       <DialogContent showCloseButton={!pending}>
