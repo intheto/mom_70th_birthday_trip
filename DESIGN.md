@@ -34,8 +34,11 @@
 
 - 일반 UI를 화면별 custom markup과 개별 스타일로 구성 → [UI 구성 원칙](docs/decisions/ui-composition.md)
 - 모든 화면에 동일한 고정 페이지 레이아웃 적용 → [UI 구성 원칙](docs/decisions/ui-composition.md)
+- 탭별로 다른 브랜드 문구 사용 → [공통 상단 헤더](docs/decisions/app-header.md)
 
 ## 화면 요소 연결
 
 - 일반 control, 페이지 shell, 시각 token, 상태 표현 → [UI 구성 원칙](docs/decisions/ui-composition.md)
 - 로그인할 구성원 선택과 가족 암호 입력 → [가족 로그인](docs/decisions/family-login.md)
+- 로그인 이후 모든 탭의 상단 브랜드와 사용자 이름 영역 → [공통 상단 헤더](docs/decisions/app-header.md)
+- 로그인 이후 모든 탭의 하단 메뉴와 본문 스크롤 영역 → [공통 하단 메뉴](docs/decisions/app-navigation.md)

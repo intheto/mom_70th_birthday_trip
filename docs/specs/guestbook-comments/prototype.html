@@ -1,0 +1,329 @@
+<!--
+  prototype shell: the review chrome every prototype starts from.
+
+  Keep this comment in the prototype you grow from here: it is the contract,
+  and later turns work from that file rather than from this one.
+
+  Contract (extend product screens; keep the review shell):
+  - Product:  .sh-stage contains only end-user product UI. Keep review notes,
+               rationale, instructions, and approval controls in conversation.
+  - Screens:  <section data-screen="slug" data-title="Label"> inside .sh-stage.
+               The selector, arrow keys, and #hash routing build themselves.
+               Use one option per product destination or distinct surface,
+               named by its product role. Keep baselines, variants, comparison
+               labels, steps, indexes, and progress out of names and states.
+               Links may use href="#slug".
+  - States:   "Default" is automatic. A screen declares only representative
+               presets in data-states="Empty,Error". Use natural, screen-specific
+               names. Reserve presets for important multi-step results, forced
+               data or errors, or materially different structure; keep one-click
+               and transient states as interactions. Use data-when="Empty" on
+               preset-only elements. Call prototypeShell.setState("Name") on
+               entry and setState("Default") on exit, including when repeated
+               actions cross a preset condition.
+  - Viewport: "vp (m)" cycles full / 390 / 768. The 390 preset is a
+               fixed-height, internally scrolling phone frame. Start a
+               mobile-first prototype by adding class="sh-vp-390" to <body>
+               (or a bootstrap classList.add before the chrome script runs).
+  - Pinning:  keep in-frame bars (tab bars, CTAs) inside the phone with
+               position: sticky; position: fixed pins to the browser window.
+  - Tokens:   replace the project-tokens block with project tokens copied
+               verbatim. Map differing names to --background, --foreground, and
+               --font afterwards; replace network fonts with a system stack and
+               note that substitution. Without a design system, keep this
+               palette as the finished style. When the project ships dark
+               tokens, copy them under .sh-theme-dark, which the shell sets
+               on both the root element and body, so :root.sh-theme-dark and
+               body.sh-theme-dark work too. A .dark class or a
+               prefers-color-scheme media query copied verbatim would follow
+               the reviewer's system instead of the toggle.
+  - Theme:    the light / dark switch (t) changes the product surface only.
+               It appears only when a .sh-theme-dark rule declares dark tokens,
+               so a prototype without them carries no theme control. Prototypes
+               always load light; the review bar keeps its own dark styling in
+               both themes so it still reads as chrome.
+  - Placeholders: .wf-pic stands in for pictures the prototype has no real
+               files for. Use real text everywhere text belongs.
+
+  - Chrome:   Keep exactly the screen selector, selected-screen state selector,
+               viewport cycle, and theme toggle.
+
+  Self-contained by design: no build, no framework, no network.
+-->
+<meta charset="utf-8">
+<title>우리 가족 방명록 · 화면 초안</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  /* ── project tokens: the project's own, or this minimal set as-is ── */
+:root {
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.147 0.004 49.25);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.147 0.004 49.25);
+  --primary: oklch(0.553 0.195 38.402);
+  --primary-foreground: oklch(0.98 0.016 73.684);
+  --secondary: oklch(0.967 0.001 286.375);
+  --secondary-foreground: oklch(0.21 0.006 285.885);
+  --muted: oklch(0.97 0.001 106.424);
+  --muted-foreground: oklch(0.553 0.013 58.071);
+  --accent: oklch(0.97 0.001 106.424);
+  --accent-foreground: oklch(0.216 0.006 56.043);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.923 0.003 48.717);
+  --input: oklch(0.923 0.003 48.717);
+  --ring: oklch(0.709 0.01 56.259);
+  --chart-1: oklch(0.837 0.128 66.29);
+  --chart-2: oklch(0.705 0.213 47.604);
+  --chart-3: oklch(0.646 0.222 41.116);
+  --chart-4: oklch(0.553 0.195 38.402);
+  --chart-5: oklch(0.47 0.157 37.304);
+  --radius: 0.625rem;
+  --sidebar: oklch(0.985 0.001 106.423);
+  --sidebar-foreground: oklch(0.147 0.004 49.25);
+  --sidebar-primary: oklch(0.646 0.222 41.116);
+  --sidebar-primary-foreground: oklch(0.98 0.016 73.684);
+  --sidebar-accent: oklch(0.97 0.001 106.424);
+  --sidebar-accent-foreground: oklch(0.216 0.006 56.043);
+  --sidebar-border: oklch(0.923 0.003 48.717);
+  --sidebar-ring: oklch(0.709 0.01 56.259);
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.147 0.004 49.25);
+}
+.sh-theme-dark {
+  --background: oklch(0.147 0.004 49.25);
+  --foreground: oklch(0.985 0.001 106.423);
+  --card: oklch(0.216 0.006 56.043);
+  --card-foreground: oklch(0.985 0.001 106.423);
+  --popover: oklch(0.216 0.006 56.043);
+  --popover-foreground: oklch(0.985 0.001 106.423);
+  --primary: oklch(0.47 0.157 37.304);
+  --primary-foreground: oklch(0.98 0.016 73.684);
+  --secondary: oklch(0.274 0.006 286.033);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.268 0.007 34.298);
+  --muted-foreground: oklch(0.709 0.01 56.259);
+  --accent: oklch(0.268 0.007 34.298);
+  --accent-foreground: oklch(0.985 0.001 106.423);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.553 0.013 58.071);
+  --chart-1: oklch(0.837 0.128 66.29);
+  --chart-2: oklch(0.705 0.213 47.604);
+  --chart-3: oklch(0.646 0.222 41.116);
+  --chart-4: oklch(0.553 0.195 38.402);
+  --chart-5: oklch(0.47 0.157 37.304);
+  --sidebar: oklch(0.216 0.006 56.043);
+  --sidebar-foreground: oklch(0.985 0.001 106.423);
+  --sidebar-primary: oklch(0.705 0.213 47.604);
+  --sidebar-primary-foreground: oklch(0.98 0.016 73.684);
+  --sidebar-accent: oklch(0.268 0.007 34.298);
+  --sidebar-accent-foreground: oklch(0.985 0.001 106.423);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.553 0.013 58.071);
+}
+:root { --font: -apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic",sans-serif; }
+
+  /* ── review chrome (sh-*): keep; extend product styles elsewhere ── */
+  * { box-sizing: border-box }
+  body {
+    margin: 0; padding: 0 0 40px;
+    background: var(--background, #f6f6f6); color: var(--foreground, #3a3a3a);
+    font-family: var(--font, system-ui, sans-serif);
+  }
+  .sh-bar {
+    position: sticky; top: 0; z-index: 999;
+    display: flex; gap: 10px; align-items: center; flex-wrap: wrap;
+    padding: 8px 12px; background: #191a1c; color: #d7d7d7;
+    font: 12px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+  .sh-bar b, .sh-control-label { color: #8a8f98; font-weight: 500 }
+  .sh-control { display: inline-flex; gap: 5px; align-items: center }
+  .sh-bar button {
+    border: 1px solid #3a3d42; background: none; color: inherit;
+    font: inherit; padding: 2px 9px; border-radius: 99px; cursor: pointer;
+  }
+  .sh-bar select {
+    width: 170px; border: 1px solid #3a3d42; background: #232428; color: inherit;
+    font: inherit; padding: 3px 28px 3px 9px; border-radius: 7px; cursor: pointer;
+    color-scheme: dark;
+  }
+  #sh-screen { width: 190px }
+  .sh-bar button.on { background: #d7d7d7; color: #191a1c; border-color: #d7d7d7 }
+  .sh-theme { display: inline-flex; border: 1px solid #3a3d42; border-radius: 99px; overflow: hidden }
+  .sh-theme button { border: 0; border-radius: 0; padding: 2px 10px }
+  .sh-spacer { flex: 1 }
+  .sh-stage { max-width: 960px; margin: 0 auto; padding: 12px 16px 0 }
+  [hidden] { display: none !important }
+
+  /* viewport presets */
+  .sh-vp-390 .sh-stage {
+    max-width: 390px; background: var(--background, #f6f6f6);
+    border: 10px solid #191a1c; border-radius: 28px;
+    padding: 16px 12px; height: min(844px, calc(100dvh - 52px));
+    overflow-y: auto; margin-top: 12px;
+  }
+  .sh-vp-768 .sh-stage {
+    max-width: 768px; border: 1px solid #c4c4c4; border-radius: 12px;
+    padding: 16px; margin-top: 12px;
+  }
+
+  /* placeholders */
+  .wf-pic  { border-radius: 4px; background:
+             repeating-linear-gradient(45deg, #e9e9e9, #e9e9e9 6px, #f2f2f2 6px, #f2f2f2 12px) }
+  .sh-theme-dark .wf-pic { background: repeating-linear-gradient(45deg,
+             color-mix(in srgb, var(--foreground) 16%, transparent) 0 6px,
+             color-mix(in srgb, var(--foreground) 8%, transparent) 6px 12px) }
+</style>
+<style>
+body {background:var(--muted);padding-bottom:12px;color:var(--foreground);-webkit-font-smoothing:antialiased}button,input,textarea{font:inherit}button,a{-webkit-tap-highlight-color:transparent}button{cursor:pointer}button:disabled{cursor:default;opacity:.45}button:focus-visible,a:focus-visible,textarea:focus-visible{outline:2px solid var(--ring);outline-offset:3px}.sh-stage,.sh-vp-390 .sh-stage,.sh-vp-768 .sh-stage{padding:0;overflow:hidden;height:min(920px,calc(100dvh - var(--review-height,50px) - 24px));margin-top:12px}.sh-stage{max-width:672px;border:1px solid var(--border);border-radius:16px;background:var(--background)}.sh-vp-390 .sh-stage{border:8px solid #191a1c;border-radius:30px;max-width:406px}.sh-stage>section{height:100%}.app{height:100%;display:flex;flex-direction:column;background:var(--background);position:relative;isolation:isolate}.app-header{flex-shrink:0;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:17px 19px;border-bottom:1px solid var(--border)}.brand{font-size:13px;font-weight:750;letter-spacing:-.4px}.brand small{display:block;margin-top:6px;font-size:10px;font-weight:400;color:var(--muted-foreground);letter-spacing:.1px}.identity{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:650;white-space:nowrap}.avatar{width:36px;height:36px;flex-shrink:0;border-radius:50%;display:grid;place-items:center;background:color-mix(in oklch,var(--primary) 8%,var(--background));color:var(--primary);font-weight:700;font-size:12px;border:1px solid color-mix(in oklch,var(--primary) 12%,var(--border))}.small-avatar{width:26px;height:26px;font-size:10px}.content{flex:1;min-height:0;overflow-y:auto;padding:28px 22px 16px;overscroll-behavior:contain}.eyebrow{font-size:11px;font-weight:650;color:var(--primary);letter-spacing:.1px}.intro h1{display:flex;align-items:center;gap:12px;font-size:30px;line-height:1.3;letter-spacing:-1.2px;margin:9px 0 12px}.heading-flower{font-size:27px;color:var(--primary);font-weight:400;opacity:.65}.intro>p{font-size:13px;color:var(--muted-foreground);line-height:1.8;margin:0}.compose{margin:24px 0 30px;border:1px solid color-mix(in oklch,var(--primary) 20%,var(--border));border-radius:14px;padding:16px;background:color-mix(in oklch,var(--primary) 3%,var(--background))}.compose-top{display:flex;gap:10px;align-items:center;margin-bottom:15px}.compose-top strong{font-size:12px;font-weight:650;letter-spacing:-.2px}.compose-top p{font-size:11px;color:var(--muted-foreground);margin:5px 0 0}.button{min-height:44px;border:1px solid transparent;border-radius:9px;padding:11px 14px;display:inline-flex;align-items:center;justify-content:center;gap:6px;font-size:13px;font-weight:650}.primary{background:var(--primary);color:var(--primary-foreground);width:100%}.outline{border-color:var(--border);color:var(--foreground);background:var(--background)}.feed-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:9px}.feed-head h2{font-size:15px;letter-spacing:-.35px;margin:0}.feed-head h2 span{font:inherit;color:var(--primary)}.feed-head>span{font-size:10px;color:var(--muted-foreground)}.post{padding:21px 0 18px;border-bottom:1px solid var(--border)}.byline{display:flex;align-items:center;gap:10px}.byline .who{flex:1}.who strong{font-size:13px}.who time{display:block;font-size:10px;color:var(--muted-foreground);margin-top:5px}.mine{font-size:10px;color:var(--primary);background:color-mix(in oklch,var(--primary) 8%,var(--background));padding:3px 6px;border-radius:4px;margin-left:5px}.message{margin:15px 0 11px;white-space:pre-wrap;overflow-wrap:anywhere;font-size:14px;line-height:1.85;letter-spacing:-.15px}.comment-toggle{display:flex;align-items:center;gap:6px;border:0;background:none;padding:8px 0;min-height:40px;color:var(--muted-foreground);font-size:12px}.comment-toggle[aria-expanded=true]{color:var(--primary)}.comment-toggle svg{width:15px;height:15px}.comment-toggle .chevron{margin-left:2px;font-size:12px}.thread{margin-top:7px;background:var(--muted);border-radius:10px;padding:14px}.reply+.reply{border-top:1px solid var(--border);padding-top:12px;margin-top:12px}.reply-header{display:flex;gap:7px;align-items:baseline;flex-wrap:wrap}.reply strong{font-size:11px}.reply time{font-size:10px;color:var(--muted-foreground)}.reply p{font-size:13px;line-height:1.8;margin:6px 0 0;white-space:pre-wrap;overflow-wrap:anywhere}.no-replies{font-size:12px;color:var(--muted-foreground);line-height:1.7;margin:0 0 12px}.reply-form{margin-top:15px;border-top:1px solid var(--border);padding-top:13px}.reply-form label{font-size:11px;color:var(--muted-foreground);display:block;margin-bottom:8px}.reply-form textarea{min-height:70px;padding:10px 11px;border-radius:8px;font-size:16px;background:var(--background)}textarea{display:block;width:100%;resize:vertical;border:1px solid var(--input);border-radius:9px;padding:14px;color:var(--foreground);background:var(--background);font-size:16px;line-height:1.7;max-height:35dvh}textarea::placeholder{font-size:12px;color:var(--muted-foreground)}.reply-actions{display:flex;justify-content:flex-end;margin-top:8px}.reply-actions .button{width:auto;min-height:36px;font-size:11px;padding:8px 13px}.nav{flex-shrink:0;display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--border);padding-bottom:env(safe-area-inset-bottom);background:var(--background)}.nav>a,.nav>span{font-size:10px;color:var(--muted-foreground);padding:11px 0 13px;display:flex;flex-direction:column;align-items:center;gap:4px;text-decoration:none}.nav b{font-size:21px;font-weight:400;line-height:1.15}.nav a[aria-current]{color:var(--primary);font-weight:700}.end-note{text-align:center;color:var(--muted-foreground);font-size:10px;margin:25px 0 8px;opacity:.8}.empty{padding:35px 8px 48px;text-align:center}.empty-icon{display:grid;place-items:center;width:48px;height:48px;border-radius:50%;background:var(--muted);margin:0 auto 17px;font-size:24px;color:var(--primary)}.empty h2{font-size:16px;margin:0 0 12px}.empty p{font-size:13px;line-height:1.8;color:var(--muted-foreground);margin:0 0 20px}.overlay{position:absolute;inset:0;background:color-mix(in srgb,var(--foreground) 25%,transparent);display:flex;align-items:center;justify-content:center;padding:18px;z-index:5;backdrop-filter:blur(3px)}.dialog{background:var(--popover);color:var(--popover-foreground);border:1px solid var(--border);border-radius:18px;padding:23px;box-shadow:0 18px 60px #0002;width:100%;max-width:420px;max-height:100%;overflow:auto}.dialog-head{display:flex;align-items:center;justify-content:space-between;gap:8px}.dialog-head h2{font-size:19px;letter-spacing:-.6px;margin:0}.icon-button{border:0;background:var(--muted);color:var(--foreground);border-radius:50%;width:32px;height:32px;font-size:23px;display:grid;place-items:center}.dialog-description{font-size:12px;line-height:1.8;color:var(--muted-foreground);margin:12px 0 22px}.author-line{display:flex;gap:6px;align-items:center;font-size:12px;margin-bottom:18px}.author-line>span:last-child{color:var(--muted-foreground);font-size:11px}.dialog label{font-size:12px;font-weight:650;display:block;margin-bottom:10px}.count{display:flex;justify-content:space-between;gap:8px;font-size:10px;color:var(--muted-foreground);margin:9px 0 20px}.error{font-size:12px;line-height:1.7;color:var(--destructive);padding:10px;border:1px solid var(--border);border-radius:8px;margin:12px 0}.toast{position:absolute;bottom:80px;left:20px;right:20px;padding:13px 16px;border-radius:10px;background:var(--foreground);color:var(--background);font-size:12px;text-align:center;box-shadow:0 4px 20px #0002;z-index:6}.sh-theme-dark .compose{background:color-mix(in oklch,var(--primary) 8%,var(--background))}
+@media(min-width:600px){body:not(.sh-vp-390) .content{padding:36px 32px 20px}body:not(.sh-vp-390) .app-header{padding:20px 32px}body:not(.sh-vp-390) .compose-top strong{font-size:14px}body:not(.sh-vp-390) .message{font-size:15px}}
+@media(max-width:599px){body{padding:0}.sh-bar{gap:8px;padding:8px 10px}.sh-bar .sh-spacer{display:none}.sh-bar select{width:128px}#sh-screen{width:120px}.sh-bar b{display:none}.sh-stage,.sh-vp-390 .sh-stage,.sh-vp-768 .sh-stage{height:calc(100dvh - var(--review-height,88px));max-width:100%;margin:0;border:0;border-radius:0}.content{padding:25px 20px 14px}.app-header{padding:15px 18px}.dialog{padding:20px}.overlay{padding:15px}.sh-bar .sh-theme button{padding:2px 8px}}
+</style>
+
+<style id="pinned-navigation">
+html, body { height: 100%; overflow: hidden; overscroll-behavior: none; }
+.app { overflow: hidden; }
+.content { overflow-y: auto; min-height: 0; -webkit-overflow-scrolling: touch; }
+.nav { position: sticky; bottom: 0; z-index: 2; flex: 0 0 auto; }
+</style>
+<body class="sh-vp-390">
+<header class="sh-bar">
+  <b>proto</b>
+  <label class="sh-control"><span class="sh-control-label">화면</span><select id="sh-screen"></select></label>
+  <span class="sh-spacer"></span>
+  <label class="sh-control"><span class="sh-control-label">상태</span><select id="sh-state"></select></label>
+  <button id="sh-vp">vp: full (m)</button>
+  <div class="sh-theme" id="sh-theme" role="group" aria-label="theme (t)" hidden>
+    <button data-theme="light">light</button><button data-theme="dark">dark</button>
+  </div>
+</header>
+
+<main class="sh-stage">
+<section data-screen="guestbook" data-title="방명록" data-states="아직 글 없음,불러오기 실패,저장 실패">
+<div class="app">
+<header class="app-header"><div class="brand">우리 가족 오사카 여행</div><div class="identity"><span class="avatar small-avatar">영욱</span><span>김영욱 님</span></div></header>
+<div class="content" id="content">
+<div class="intro"><h1>방명록<span class="heading-flower" aria-hidden="true">✳</span></h1></div>
+<div class="compose" data-component="Card"><div class="compose-top"><span class="avatar">영욱</span><div><strong>가족에게 전하고 싶은 말이 있나요?</strong><p>김영욱 님의 이름으로 남겨요.</p></div></div><button class="button primary" id="open-compose" data-component="Button"><span aria-hidden="true">＋</span> 한마디 남기기</button></div>
+<section data-when="Default,저장 실패" aria-labelledby="feed-title"><div class="feed-head"><h2 id="feed-title"><span id="total">3</span>개의 이야기가 쌓였어요</h2><span>최근 글부터</span></div><div id="posts"></div></section>
+<div data-when="아직 글 없음" class="empty" data-component="Empty"><span class="empty-icon" aria-hidden="true">✎</span><h2>첫 이야기를 남겨볼까요?</h2><p>짧은 한마디로 시작해도 좋아요.<br>우리 가족의 이야기가 여기에 쌓여요.</p><button class="button outline" id="first-post" data-component="Button">첫 이야기 남기기</button></div>
+<div data-when="불러오기 실패" class="empty" data-component="Alert"><span class="empty-icon" aria-hidden="true">!</span><h2>이야기를 불러오지 못했어요</h2><p>잠시 후 다시 시도해 주세요.</p><button class="button outline" id="retry-load" data-component="Button">다시 불러오기</button></div>
+<p class="end-note" data-when="Default,저장 실패">작은 한마디도, 우리에겐 소중한 추억.</p>
+</div>
+<nav class="nav" aria-label="주요 메뉴"><span><b aria-hidden="true">⌂</b>홈</span><span><b aria-hidden="true">☑</b>준비하기</span><span><b aria-hidden="true">✈</b>여행 정보</span><a href="#guestbook" aria-current="page"><b aria-hidden="true">♡</b>방명록</a></nav>
+<div class="toast" role="status" hidden></div>
+<div class="overlay" id="overlay" hidden><div class="dialog" role="dialog" aria-modal="true" aria-labelledby="compose-title" data-component="Dialog"><div class="dialog-head"><h2 id="compose-title">가족에게 한마디</h2><button type="button" class="icon-button" id="close-compose" aria-label="닫기">×</button></div><p class="dialog-description">여행 이야기, 고마운 마음, 작은 안부도 좋아요.</p><form id="post-form" data-component="FieldGroup"><div class="author-line"><span class="avatar small-avatar">영욱</span><strong>김영욱</strong><span>님의 이야기</span></div><label for="post-body">남기고 싶은 이야기</label><textarea id="post-body" rows="6" maxlength="2000" placeholder="우리 가족과 함께할 오사카 여행, 어떤 마음인가요?" required data-component="Textarea"></textarea><div class="count"><span>가족 모두에게 보여요</span><span id="post-count">0 / 2,000</span></div><p id="post-error" class="error" role="alert" hidden data-component="Alert">글을 저장하지 못했어요. 내용은 남아 있으니 다시 시도해 주세요.</p><button class="button primary" id="save-post" disabled data-component="Button">방명록에 남기기</button></form></div></div>
+</div></section>
+</main>
+
+<script>
+  const stage = document.querySelector('.sh-stage');
+  const screens = [...stage.querySelectorAll('[data-screen]')];
+  const screenSelect = document.getElementById('sh-screen');
+  const stateSelect = document.getElementById('sh-state');
+  const vpBtn = document.getElementById('sh-vp');
+  const themeCtl = document.getElementById('sh-theme');
+  const themeBtns = [...themeCtl.querySelectorAll('button')];
+  let current = null;
+  let currentStates = [];
+
+  screens.forEach(s => {
+    const option = document.createElement('option');
+    option.textContent = s.dataset.title || s.dataset.screen;
+    option.value = s.dataset.screen;
+    screenSelect.append(option);
+  });
+  screenSelect.onchange = () => show(screenSelect.value);
+
+  function show(slug) {
+    current = screens.find(s => s.dataset.screen === slug) || screens[0];
+    screens.forEach(s => s.hidden = s !== current);
+    screenSelect.value = current.dataset.screen;
+    history.replaceState(null, '', '#' + current.dataset.screen);
+    buildStates();
+  }
+
+  function buildStates() {
+    const declared = (current.dataset.states || '').split(',').map(x => x.trim()).filter(Boolean);
+    currentStates = ['Default', ...declared.filter(name => name !== 'Default')];
+    stateSelect.innerHTML = '';
+    currentStates.forEach(name => {
+      const option = document.createElement('option');
+      option.textContent = name;
+      option.value = name;
+      stateSelect.append(option);
+    });
+    applyState('Default');
+  }
+
+  function applyState(name) {
+    const active = currentStates.includes(name) ? name : 'Default';
+    current.querySelectorAll('[data-when]').forEach(el => {
+      el.hidden = !el.dataset.when.split(',').map(x => x.trim()).includes(active);
+    });
+    stateSelect.value = active;
+  }
+  stateSelect.onchange = () => applyState(stateSelect.value);
+
+  window.prototypeShell = {
+    showScreen: show,
+    setState: applyState,
+    getScreen: () => current?.dataset.screen,
+    getState: () => stateSelect.value
+  };
+
+  const VPS = ['full', '390', '768'];
+  let vp = VPS.find(v => document.body.classList.contains('sh-vp-' + v)) || 'full';
+  function applyVp() {
+    VPS.forEach(v => document.body.classList.toggle('sh-vp-' + v, v === vp && v !== 'full'));
+    vpBtn.textContent = 'vp: ' + vp + ' (m)';
+    vpBtn.classList.toggle('on', vp !== 'full');
+  }
+  vpBtn.onclick = () => { vp = VPS[(VPS.indexOf(vp) + 1) % VPS.length]; applyVp(); };
+  applyVp();
+
+  const hasDark = [...document.styleSheets].some(sheet => {
+    try {
+      return [...sheet.cssRules].some(rule => (rule.selectorText || '')
+        .split(',').some(part => /\.sh-theme-dark$/.test(part.trim())));
+    } catch { return false }
+  });
+  let dark = false;
+  function applyTheme() {
+    document.documentElement.classList.toggle('sh-theme-dark', dark);
+    document.body.classList.toggle('sh-theme-dark', dark);
+    themeBtns.forEach(b => b.classList.toggle('on', (b.dataset.theme === 'dark') === dark));
+  }
+  themeCtl.hidden = !hasDark;
+  themeBtns.forEach(b => b.onclick = () => { dark = b.dataset.theme === 'dark'; applyTheme(); });
+  applyTheme();
+
+  addEventListener('keydown', e => {
+    if (/INPUT|TEXTAREA|SELECT/.test(e.target.tagName)) return;
+    const i = screens.indexOf(current);
+    if (e.key === 'ArrowRight') show(screens[(i + 1) % screens.length].dataset.screen);
+    if (e.key === 'ArrowLeft') show(screens[(i - 1 + screens.length) % screens.length].dataset.screen);
+    if (e.key === 'm') vpBtn.click();
+    if (e.key === 't' && !themeCtl.hidden) { dark = !dark; applyTheme(); }
+  });
+
+  addEventListener('hashchange', () => show(location.hash.slice(1)));
+  show(location.hash.slice(1));
+</script>
+<script>
+const $=s=>document.querySelector(s);let nextId=4;let failedOnce=false;let toastTimer;let activeOpener=null;
+const initial=[{id:1,by:'김고은',time:'오늘 오전 10:30',text:'엄마랑 함께 오사카 갈 생각에 벌써 설레요.\n이번엔 맛있는 것도 많이 먹고, 가족사진도 많이 찍어요! 🌸',comments:[{by:'이정희',time:'오늘 오전 10:42',text:'다 같이 가니 엄마는 벌써 좋다. 건강하게 잘 다녀오자 ❤️'},{by:'강병용',time:'오늘 오전 11:05',text:'어머님, 맛집은 제가 열심히 찾아볼게요!'}]},{id:2,by:'김영욱',time:'어제 오후 8:15',text:'비행기 타기 전부터 이미 여행이 시작된 기분이네요. 준비하는 시간도 우리 가족의 좋은 추억이 되면 좋겠어요. ✈️',comments:[]},{id:3,by:'류낭',time:'어제 오후 5:40',text:'어머님 편하게 걸으실 수 있게 쉬어갈 곳도 같이 찾아봐요. 좋은 카페 발견하면 여기에 공유할게요 ☕',comments:[{by:'김재이',time:'어제 오후 6:10',text:'저도 찾아볼게요! 할머니랑 맛있는 디저트 먹고 싶어요.'}]}];
+let entries=structuredClone(initial);let expanded=new Set([1]);
+function toast(text){$('.toast').textContent=text;$('.toast').hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('.toast').hidden=true,2200)}
+function node(tag,cls,text){const el=document.createElement(tag);if(cls)el.className=cls;if(text!==undefined)el.textContent=text;return el}
+function render(){const list=$('#posts');list.replaceChildren();$('#total').textContent=entries.length;entries.forEach(entry=>{const art=node('article','post');art.dataset.component='new:GuestbookPost';art.dataset.postId=entry.id;const line=node('div','byline');const avatar=node('span','avatar',entry.by.slice(-2));const who=node('div','who');const name=node('strong','',entry.by);if(entry.by==='김영욱')name.append(node('span','mine','나'));who.append(name,node('time','',entry.time));line.append(avatar,who);art.append(line,node('p','message',entry.text));const toggle=node('button','comment-toggle');toggle.type='button';toggle.setAttribute('aria-expanded',expanded.has(entry.id));toggle.setAttribute('aria-controls','thread-'+entry.id);toggle.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M4 4h16v12H9l-5 4z"/></svg>';toggle.append(node('span','',`댓글 ${entry.comments.length}`),node('span','chevron',expanded.has(entry.id)?'⌃':'⌄'));toggle.onclick=()=>{expanded.has(entry.id)?expanded.delete(entry.id):expanded.add(entry.id);render()};art.append(toggle);const thread=node('div','thread');thread.id='thread-'+entry.id;thread.hidden=!expanded.has(entry.id);if(!entry.comments.length)thread.append(node('p','no-replies','아직 댓글이 없어요. 첫 답글을 남겨주세요.'));entry.comments.forEach(c=>{const reply=node('div','reply');const header=node('div','reply-header');header.append(node('strong','',c.by),node('time','',c.time));reply.append(header,node('p','',c.text));thread.append(reply)});const form=node('form','reply-form');form.dataset.component='FieldGroup';const label=node('label','', '김영욱 님으로 댓글 남기기');label.htmlFor='reply-'+entry.id;const input=node('textarea');input.id='reply-'+entry.id;input.rows=2;input.maxLength=500;input.placeholder='이 이야기에 답해 주세요';input.required=true;input.dataset.component='Textarea';const error=node('p','error','댓글을 저장하지 못했어요. 내용을 확인한 뒤 다시 시도해 주세요.');error.hidden=true;error.setAttribute('role','alert');const actions=node('div','reply-actions');const save=node('button','button primary','댓글 남기기');save.type='submit';save.disabled=true;save.dataset.component='Button';input.oninput=()=>save.disabled=!input.value.trim();actions.append(save);form.append(label,input,error,actions);form.onsubmit=e=>{e.preventDefault();const text=input.value.trim();if(!text)return;if(prototypeShell.getState()==='저장 실패'&&!failedOnce){failedOnce=true;error.hidden=false;return}entry.comments.push({by:'김영욱',time:'방금 전',text});expanded.add(entry.id);const scroll=$('#content').scrollTop;prototypeShell.setState('Default');render();$('#content').scrollTop=scroll;toast('댓글을 남겼어요.');$('#thread-'+entry.id+' textarea').focus()};thread.append(form);art.append(thread);list.append(art)})}
+function openCompose(e){activeOpener=e?.currentTarget||$('#open-compose');$('#overlay').hidden=false;$('#content').inert=true;$('.nav').inert=true;$('.app-header').inert=true;$('#post-error').hidden=true;$('#post-body').focus()}
+function closeCompose(){$('#overlay').hidden=true;$('#content').inert=false;$('.nav').inert=false;$('.app-header').inert=false;activeOpener?.focus()}
+$('#open-compose').onclick=openCompose;$('#first-post').onclick=openCompose;$('#close-compose').onclick=closeCompose;$('#overlay').onclick=e=>{if(e.target===$('#overlay'))closeCompose()};addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('#overlay').hidden)closeCompose();if(e.key==='Tab'&&!$('#overlay').hidden){const focusables=[...$('.dialog').querySelectorAll('button:not(:disabled),textarea')];const first=focusables[0],last=focusables.at(-1);if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus()}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}}});
+$('#post-body').oninput=()=>{$('#post-count').textContent=$('#post-body').value.length.toLocaleString('ko-KR')+' / 2,000';$('#save-post').disabled=!$('#post-body').value.trim()};
+$('#post-form').onsubmit=e=>{e.preventDefault();const text=$('#post-body').value.trim();if(!text)return;if(prototypeShell.getState()==='저장 실패'&&!failedOnce){failedOnce=true;$('#post-error').hidden=false;return}if(prototypeShell.getState()==='아직 글 없음')entries=[];entries.unshift({id:nextId++,by:'김영욱',time:'방금 전',text,comments:[]});prototypeShell.setState('Default');render();closeCompose();$('#post-body').value='';$('#post-body').oninput();$('#content').scrollTop=0;toast('가족에게 한마디를 남겼어요.')};
+$('#retry-load').onclick=()=>prototypeShell.setState('Default');$('#sh-state').addEventListener('change',()=>{failedOnce=false;if(prototypeShell.getState()==='Default'){entries=structuredClone(initial);expanded=new Set([1]);render()}$('#content').scrollTop=0});
+new ResizeObserver(()=>document.documentElement.style.setProperty('--review-height',$('.sh-bar').getBoundingClientRect().height+'px')).observe($('.sh-bar'));
+render();
+</script>
