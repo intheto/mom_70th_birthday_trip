@@ -28,6 +28,7 @@
 - Badge
 - Alert
 - Label, Separator
+- Dialog, Empty, Skeleton
 
 ## 피하는 패턴
 

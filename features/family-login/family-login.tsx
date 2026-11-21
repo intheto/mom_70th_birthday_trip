@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import { useEffect, useState } from 'react';
+import { useActionState, useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardContent, CardTitle, CardDescription } from '@/components/ui/card';
 import { Field, FieldGroup, FieldSet, FieldLegend, FieldLabel, FieldDescription } from '@/components/ui/field';
@@ -11,12 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { cn } from '@/lib/utils';
 import styles from './family-login.module.css';
-
-const families = [
-  { label: '사랑하는 우리 어머니', members: ['이정희'] },
-  { label: '아들래미 가족', members: ['김영욱', '류낭', '김재이', '김태이', '김채이'] },
-  { label: '딸래미 가족', members: ['김고은', '강병용', '강한성', '강한결'] },
-];
+import type { FamilyGroup, LoginState } from './types';
 
 const loginLabels: Record<string, string> = {
   "이정희": "내가 쏜다! 💸",
@@ -38,12 +33,16 @@ function countdown() {
   return days > 0 ? `D-${days}` : days === 0 ? 'D-Day' : `D+${Math.abs(days)}`;
 }
 
-export function FamilyLogin() {
+export function FamilyLogin({ families, loginAction, initialError = '' }: {
+  families: FamilyGroup[];
+  loginAction: (state: LoginState, form: FormData) => Promise<LoginState>;
+  initialError?: string;
+}) {
   const [name, setName] = useState('');
   const [pin, setPin] = useState('');
   const [visible, setVisible] = useState(false);
   const [day, setDay] = useState('');
-  const [notice, setNotice] = useState(false);
+  const [state, action, pending] = useActionState(loginAction, { error: '' });
 
   useEffect(() => {
     const update = () => setDay(countdown());
@@ -73,11 +72,12 @@ export function FamilyLogin() {
               <CardDescription className={styles.instruction}>아래의 사용자 정보 선택 후 로그인 하세요</CardDescription>
             </CardHeader>
             <CardContent>
-              <form onSubmit={event => { event.preventDefault(); setNotice(true); }}>
+              <form action={action}>
+                <input type="hidden" name="name" value={name} />
                 <FieldGroup>
-                  <FieldSet>
+                  <FieldSet disabled={pending}>
                     <FieldLegend className={styles.legend}>이름 선택</FieldLegend>
-                    <RadioGroup aria-label="본인 이름" value={name} onValueChange={value => { setName(String(value)); setPin(''); setNotice(false); }}>
+                    <RadioGroup aria-label="본인 이름" value={name} onValueChange={value => { setName(String(value)); setPin(''); }}>
                       {families.map((family, index) => (
                         <div key={family.label} className={styles.family}>
                           <p className={cn(styles.familyLabel, index === 0 && styles.motherLabel)}>{family.label}</p>
@@ -92,17 +92,17 @@ export function FamilyLogin() {
                       ))}
                     </RadioGroup>
                   </FieldSet>
-                  <Field>
+                  <Field data-invalid={Boolean(state.error)}>
                     <FieldLabel htmlFor="family-pin" className={styles.legend}>가족 암호</FieldLabel>
                     <InputGroup className={styles.pinGroup}>
-                      <InputGroupInput id="family-pin" type={visible ? 'text' : 'password'} inputMode="numeric" maxLength={4} pattern="[0-9]{4}" autoComplete="current-password" value={pin} onChange={event => { setPin(event.target.value.replace(/[^0-9]/g, '').slice(0, 4)); setNotice(false); }} placeholder="숫자 4자리를 입력해 주세요" aria-describedby="pin-help" required />
+                      <InputGroupInput id="family-pin" name="pin" type={visible ? 'text' : 'password'} inputMode="numeric" maxLength={4} pattern="[0-9]{4}" autoComplete="current-password" value={pin} disabled={pending} aria-invalid={Boolean(state.error)} onChange={event => { setPin(event.target.value.replace(/[^0-9]/g, '').slice(0, 4)); }} placeholder="숫자 4자리를 입력해 주세요" aria-describedby="pin-help" required />
                       <InputGroupAddon align="inline-end"><InputGroupButton onClick={() => setVisible(!visible)} aria-label={visible ? '암호 숨기기' : '암호 보기'} aria-pressed={visible}>{visible ? '숨기기' : '보기'}</InputGroupButton></InputGroupAddon>
                     </InputGroup>
                     <FieldDescription id="pin-help">가족에게 전달받은 암호를 입력해 주세요.</FieldDescription>
                     <p className="text-sm font-bold text-foreground">아래 버튼을 눌러주세요.</p>
                   </Field>
-                  {notice && <Alert><AlertDescription>로그인 연결을 준비 중이에요. 현재는 이름 선택과 암호 입력 화면을 확인할 수 있어요.</AlertDescription></Alert>}
-                  <Button className={styles.submit} type="submit" disabled={!name || pin.length !== 4}>{loginLabels[name] ?? '엄마! 잘탈게! ✈️'}</Button>
+                  {!pending && (state.error || initialError) && <Alert variant="destructive"><AlertDescription>{state.error || initialError}</AlertDescription></Alert>}
+                  <Button className={styles.submit} type="submit" disabled={pending || !name || pin.length !== 4}>{pending ? '가족 암호 확인 중…' : (loginLabels[name] ?? '엄마! 잘탈게! ✈️')}</Button>
                 </FieldGroup>
               </form>
             </CardContent>
