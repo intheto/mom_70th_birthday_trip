@@ -43,11 +43,13 @@ function CheckItem({ scope, item, checked, disabled, changeAction }: {
   </div>;
 }
 
-function Opinion({ topic, title, comments, writeAction }: {
+function Opinion({ topic, title, comments, writeAction, initialOpen = false }: {
+  initialOpen?: boolean;
   topic: string; title: string; comments: PreparationComment[]; writeAction: CommentAction;
 }) {
   const id = useId();
   const [body, setBody] = useState('');
+  const [open, setOpen] = useState(initialOpen);
   const [state, formAction, pending] = useActionState(async (previous: MutationResult, form: FormData) => {
     try {
       const result = await writeAction(topic, previous, form);
@@ -55,13 +57,13 @@ function Opinion({ topic, title, comments, writeAction }: {
       return result;
     } catch { return { saved: false, error: '의견을 저장하지 못했어요. 다시 시도해 주세요.' }; }
   }, { saved: false, error: '' });
-  return <Collapsible className="flex flex-col gap-2">
+  return <Collapsible open={open} onOpenChange={setOpen} className="flex flex-col gap-2">
     <CollapsibleTrigger render={<Button variant="ghost" className="min-h-10 justify-start px-0 text-sm text-primary" />}>
       <span aria-hidden="true">▸</span>{title}{comments.length > 0 && <span className="text-muted-foreground">· {comments.length}</span>}
     </CollapsibleTrigger>
     <CollapsibleContent className="flex flex-col gap-4">
       {comments.length ? <ul className="flex flex-col gap-3" aria-label={`${title} 의견 목록`}>
-        {comments.map(comment => <li key={comment.id} className="flex flex-col gap-1">
+        {comments.map(comment => <li key={comment.id} id={`news-${comment.id}`} data-news-id={comment.id} data-news-kind="opinion" className="flex flex-col gap-1">
           <span className="text-xs font-semibold text-muted-foreground">{comment.author}</span>
           <p className="whitespace-pre-wrap break-words text-sm leading-relaxed">{comment.body}</p>
         </li>)}
@@ -83,7 +85,8 @@ function Opinion({ topic, title, comments, writeAction }: {
   </Collapsible>;
 }
 
-export function PreparationList({ snapshot, changeAction, writeAction }: {
+export function PreparationList({ snapshot, changeAction, writeAction, focusedTopic }: {
+  focusedTopic?: string;
   snapshot: PreparationSnapshot; changeAction: CheckAction; writeAction: CommentAction;
 }) {
   return <div className="flex flex-col gap-8">
@@ -96,7 +99,7 @@ export function PreparationList({ snapshot, changeAction, writeAction }: {
         </CardHeader>
         <CardContent className="flex flex-col gap-2 pl-12">
           <Separator />
-          {item.topics.map(topic => <Opinion key={topic.id} topic={topic.id} title={topic.title}
+          {item.topics.map(topic => <Opinion key={topic.id} initialOpen={focusedTopic === topic.id} topic={topic.id} title={topic.title}
             comments={snapshot.comments.filter(comment => comment.topic === topic.id)} writeAction={writeAction} />)}
         </CardContent>
       </Card>)}

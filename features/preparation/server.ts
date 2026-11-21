@@ -78,3 +78,21 @@ export async function getPreparationProgress() {
     personal: { completed: personal.count ?? 0, total: personalItems.length * (members.count ?? 0) },
   };
 }
+
+export async function getPreparationItemProgress() {
+  const db = database();
+  const [shared, family, personal, families, members] = await Promise.all([
+    db.from('preparation_shared_checks').select('item_id').eq('completed', true),
+    db.from('preparation_family_checks').select('item_id').eq('completed', true),
+    db.from('preparation_personal_checks').select('item_id').eq('completed', true),
+    db.from('families').select('id', { count: 'exact', head: true }),
+    db.from('family_members').select('id', { count: 'exact', head: true }),
+  ]);
+  for (const result of [shared, family, personal, families, members]) if (result.error) throw result.error;
+  const items = (catalog: readonly { id: string; title: string; emoji: string }[], rows: { item_id: string }[] | null, total: number) => catalog.map(item => ({ ...item, completed: (rows ?? []).filter(row => row.item_id === item.id).length, total }));
+  return {
+    shared: items(sharedItems, shared.data, 1),
+    family: items(familyItems, family.data, families.count ?? 0),
+    personal: items(personalItems, personal.data, members.count ?? 0),
+  };
+}

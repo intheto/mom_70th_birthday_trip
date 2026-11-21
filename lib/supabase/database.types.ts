@@ -14,6 +14,13 @@ export type Database = {
   }
   public: {
     Tables: {
+      news_reads: {
+        Row: { member_id: string; kind: string; news_id: string; read_at: string }
+        Insert: { member_id: string; kind: string; news_id: string; read_at?: string }
+        Update: { member_id?: string; kind?: string; news_id?: string; read_at?: string }
+        Relationships: []
+      }
+
       families: {
         Row: {
           created_at: string
