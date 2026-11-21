@@ -35,6 +35,7 @@
 - 일반 UI를 화면별 custom markup과 개별 스타일로 구성 → [UI 구성 원칙](docs/decisions/ui-composition.md)
 - 모든 화면에 동일한 고정 페이지 레이아웃 적용 → [UI 구성 원칙](docs/decisions/ui-composition.md)
 - 선택한 탭과 무관한 고정 브랜드·축하 문구 사용 → [공통 상단 헤더](docs/decisions/app-header.md)
+- 상단 탭 제목을 본문의 페이지 제목으로 반복 → [공통 상단 헤더](docs/decisions/app-header.md)
 
 ## 화면 요소 연결
 

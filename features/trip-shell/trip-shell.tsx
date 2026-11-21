@@ -29,7 +29,7 @@ export function TripShell({ name, logoutAction, children }: {
   return (
     <div className="mx-auto flex h-dvh w-full max-w-2xl flex-col bg-background text-foreground">
       <header className="flex shrink-0 items-center justify-between gap-2 border-b px-4 py-3">
-        <span className="min-w-0 text-sm font-bold leading-relaxed">{title}</span>
+        <h1 className="min-w-0 text-3xl font-bold leading-tight tracking-tight">{title}</h1>
         <div className="flex shrink-0 flex-col items-end gap-1"><span className="text-sm font-semibold">{name} 님</span><form action={logoutAction}><LogoutButton /></form></div>
       </header>
       <main id="trip-content" className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 py-6">{children}</main>

@@ -10,7 +10,6 @@ export default async function TripHome() {
   if (!await getCurrentMember()) redirect('/');
   const entries = await getGuestbookEntries(1);
   return <div className="flex flex-col gap-7">
-    <h1 className="text-3xl font-bold">홈</h1>
     <section className="relative isolate overflow-hidden rounded-2xl border bg-muted px-5 py-7">
       <Image src="/images/family-login/osaka-pastel.png" alt="" fill sizes="(max-width: 672px) 100vw, 672px" className="-z-10 object-cover opacity-35" priority />
       <Badge variant="secondary">2027. 5. 13 – 5. 16 · 3박 4일</Badge>

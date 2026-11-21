@@ -87,7 +87,6 @@ export function PreparationList({ snapshot, changeAction, writeAction }: {
   snapshot: PreparationSnapshot; changeAction: CheckAction; writeAction: CommentAction;
 }) {
   return <div className="flex flex-col gap-8">
-    <h1 className="text-2xl font-bold tracking-tight">여행 준비하기</h1>
     <section aria-labelledby="shared-checks" className="flex flex-col gap-3">
       <div className="flex flex-col gap-1"><h2 id="shared-checks" className="text-lg font-bold">공동 체크 리스트</h2>
         <p className="text-sm leading-relaxed text-muted-foreground">김영욱 님이 완료하면 가족 모두에게 표시돼요.</p></div>
