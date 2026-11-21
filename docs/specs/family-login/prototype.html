@@ -327,11 +327,12 @@ addEventListener('pageshow',updateCountdown);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)updateCountdown()});
 
 // 화면 검토용 더미 암호만 사용한다. Supabase 및 실제 인증과 연결하지 않는다.
+const loginLabels={"이정희": "내가 쏜다! 💸", "김영욱": "효도는 현지에서! ✈️", "류낭": "어머님 충성! 🫡", "김재이": "할머니 최고!! ❤️", "김태이": "할머니 최고!! ❤️", "강한성": "할머니 최고!! ❤️", "강한결": "할머니 최고!! ❤️", "김고은": "효도는 현지에서! ✈️", "강병용": "사위는 공짜죠? 😎", "김채이": "할미 쪼아앙! 🥰"};
 let selectedName='';
 const pin=document.getElementById('pin');
 const submit=document.getElementById('login-button');
 const members=[...document.querySelectorAll('.member')];
-function ready(){submit.disabled=!(selectedName && /^[0-9]{4}$/.test(pin.value))}
+function ready(){submit.textContent=loginLabels[selectedName] || '엄마! 잘탈게! ✈️';submit.disabled=!(selectedName && /^[0-9]{4}$/.test(pin.value))}
 function resetLogin(){selectedName='';pin.value='';pin.type='password';document.getElementById('reveal').textContent='보기';document.getElementById('reveal').setAttribute('aria-label','암호 보기');document.getElementById('reveal').setAttribute('aria-pressed','false');members.forEach(b=>{b.setAttribute('aria-pressed','false');b.querySelector('.tick').textContent='○'});ready()}
 members.forEach(b=>b.addEventListener('click',()=>{selectedName=b.dataset.name;members.forEach(m=>{const active=m===b;m.setAttribute('aria-pressed',String(active));m.querySelector('.tick').textContent=active?'✓':'○'});pin.value='';prototypeShell.setState('Default');ready()}));
 pin.addEventListener('input',()=>{pin.value=pin.value.replace(/[^0-9]/g,'').slice(0,4);prototypeShell.setState('Default');ready()});

@@ -18,6 +18,19 @@ const families = [
   { label: '딸래미 가족', members: ['김고은', '강병용', '강한성', '강한결'] },
 ];
 
+const loginLabels: Record<string, string> = {
+  "이정희": "내가 쏜다! 💸",
+  "김영욱": "효도는 현지에서! ✈️",
+  "류낭": "어머님 충성! 🫡",
+  "김재이": "할머니 최고!! ❤️",
+  "김태이": "할머니 최고!! ❤️",
+  "강한성": "할머니 최고!! ❤️",
+  "강한결": "할머니 최고!! ❤️",
+  "김고은": "효도는 현지에서! ✈️",
+  "강병용": "사위는 공짜죠? 😎",
+  "김채이": "할미 쪼아앙! 🥰"
+};
+
 function countdown() {
   const parts = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Seoul', year: 'numeric', month: '2-digit', day: '2-digit' }).formatToParts(new Date());
   const value = (type: string) => Number(parts.find(part => part.type === type)?.value);
@@ -88,7 +101,7 @@ export function FamilyLogin() {
                     <FieldDescription id="pin-help">가족에게 전달받은 암호를 입력해 주세요.</FieldDescription>
                   </Field>
                   {notice && <Alert><AlertDescription>로그인 연결을 준비 중이에요. 현재는 이름 선택과 암호 입력 화면을 확인할 수 있어요.</AlertDescription></Alert>}
-                  <Button className={styles.submit} type="submit" disabled={!name || pin.length !== 4}>엄마! 잘탈게! ✈️</Button>
+                  <Button className={styles.submit} type="submit" disabled={!name || pin.length !== 4}>{loginLabels[name] ?? '엄마! 잘탈게! ✈️'}</Button>
                 </FieldGroup>
               </form>
             </CardContent>
