@@ -1,10 +1,12 @@
 import { OsakaWeather } from '@/features/travel-weather';
 import { OsakaNameStory } from '@/features/travel-stories';
+import { OsakaLandmarks } from '@/features/travel-landmarks';
 
 // 새 정보는 끝에 추가한다. 화면에는 추가 순서의 역순으로 표시한다.
 const informationCards = [
   { id: 'weather', Component: OsakaWeather },
   { id: 'osaka-name', Component: OsakaNameStory },
+  { id: 'osaka-landmarks', Component: OsakaLandmarks },
 ];
 
 export default function TravelPage() {

@@ -1,0 +1,42 @@
+[
+  {
+    "id": "castle",
+    "image_url": "https://cdn.osaka-info.jp/page_translation/content/fe20c480-04c1-11e8-b577-06326e701dd4.jpeg",
+    "source_page": "https://osaka-info.jp/ko/spot/osaka-castle-main-keep/",
+    "credit": "오사카관광국 OSAKA-INFO",
+    "bytes": 336217,
+    "file": "castle.jpg"
+  },
+  {
+    "id": "dotonbori",
+    "image_url": "https://cdn.osaka-info.jp/page_translation/content/8dee10d4-04bf-11e8-9a51-06326e701dd4.jpeg",
+    "source_page": "https://osaka-info.jp/ko/spot/dotonbori/",
+    "credit": "오사카관광국 OSAKA-INFO",
+    "bytes": 402072,
+    "file": "dotonbori.jpg"
+  },
+  {
+    "id": "tsutenkaku",
+    "image_url": "https://osaka-info.jp/spot/images/0418_210331_02%20%281%29.jpg",
+    "source_page": "https://osaka-info.jp/ko/spot/shinsekai/",
+    "credit": "오사카관광국 OSAKA-INFO",
+    "bytes": 343910,
+    "file": "tsutenkaku.jpg"
+  },
+  {
+    "id": "umeda",
+    "image_url": "https://osaka-info.jp/spot/images/1.JPG",
+    "source_page": "https://osaka-info.jp/ko/spot/umeda-sky-building/",
+    "credit": "오사카관광국 OSAKA-INFO",
+    "bytes": 2697541,
+    "file": "umeda.jpg"
+  },
+  {
+    "id": "kaiyukan",
+    "image_url": "https://osaka-info.jp/spot/images/a5cdb363809ab3b29f020f294012d93dcc04bc45.JPG",
+    "source_page": "https://osaka-info.jp/ko/spot/osaka-aquarium-kaiyukan/",
+    "credit": "오사카관광국 OSAKA-INFO",
+    "bytes": 589387,
+    "file": "kaiyukan.jpg"
+  }
+]
