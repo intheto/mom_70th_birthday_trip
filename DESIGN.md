@@ -44,3 +44,4 @@
 - 로그인 이후 모든 탭의 상단 탭 제목과 사용자 이름 영역 → [공통 상단 헤더](docs/decisions/app-header.md)
 - 로그인 이후 모든 탭의 하단 메뉴와 본문 스크롤 영역 → [공통 하단 메뉴](docs/decisions/app-navigation.md)
 - 여행 정보 탭의 카드 순서와 간소한 현재 날씨 → [여행 정보 카드](docs/decisions/travel-information-cards.md)
+- 홈의 여행 정보 새 소식과 카드별 읽음 → [여행 정보 카드](docs/decisions/travel-information-cards.md)

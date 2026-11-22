@@ -1,18 +1,11 @@
-import { OsakaWeather } from '@/features/travel-weather';
-import { OsakaNameStory } from '@/features/travel-stories';
-import { OsakaLandmarks } from '@/features/travel-landmarks';
-
-// 새 정보는 끝에 추가한다. 화면에는 추가 순서의 역순으로 표시한다.
-const informationCards = [
-  { id: 'weather', Component: OsakaWeather },
-  { id: 'osaka-name', Component: OsakaNameStory },
-  { id: 'osaka-landmarks', Component: OsakaLandmarks },
-];
+import { informationCards } from './information';
 
 export default function TravelPage() {
   return (
     <div className="flex flex-col gap-6">
-      {informationCards.toReversed().map(({ id, Component }) => <Component key={id} />)}
+      {informationCards.toReversed().map(({ id, Component, information }) => information.length === 1
+        ? <div key={id} id={`news-${information[0].id}`} data-news-id={information[0].id} data-news-kind="travel"><Component /></div>
+        : <Component key={id} />)}
     </div>
   );
 }

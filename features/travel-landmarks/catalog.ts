@@ -7,6 +7,7 @@ import kaiyukanPhoto from './photos/kaiyukan.jpg';
 export const landmarks = [
   {
     "id": "castle",
+    "newsId": "6b2dac12-c69b-57d0-948a-2eec4b6bfae3",
     "name": "오사카성",
     "ja": "大阪城",
     "area": "오사카성 일대",
@@ -23,6 +24,7 @@ export const landmarks = [
   },
   {
     "id": "dotonbori",
+    "newsId": "3aa30ee6-c959-584c-864e-e875842616d2",
     "name": "도톤보리",
     "ja": "道頓堀",
     "area": "난바",
@@ -39,6 +41,7 @@ export const landmarks = [
   },
   {
     "id": "tsutenkaku",
+    "newsId": "0b90f44d-1ba2-546a-9f04-d78ae9a28df2",
     "name": "쓰텐카쿠",
     "ja": "通天閣",
     "area": "신세카이",
@@ -55,6 +58,7 @@ export const landmarks = [
   },
   {
     "id": "umeda",
+    "newsId": "970c9bad-240c-5fe4-ac23-5f440cd077fc",
     "name": "우메다 스카이빌딩",
     "ja": "梅田スカイビル",
     "area": "우메다",
@@ -71,6 +75,7 @@ export const landmarks = [
   },
   {
     "id": "kaiyukan",
+    "newsId": "4067c402-d199-5a9c-8730-0c98ed027751",
     "name": "가이유칸",
     "ja": "海遊館",
     "area": "덴포잔 · 오사카항",

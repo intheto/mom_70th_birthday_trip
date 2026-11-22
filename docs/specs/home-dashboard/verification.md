@@ -14,3 +14,14 @@
 - 자동 코드 리뷰 도구와 code-review CLI가 제공되지 않았다. AGENTS.md의 예산에 따라 재리뷰 없이 완료한다.
 
 공식 확인 자료: https://supabase.com/changelog.md, https://supabase.com/docs/reference/javascript/upsert
+
+## 여행 정보 새 소식 확장 — 2026-11-22
+
+- 기존 커밋 `ab7bcaf`(날씨), `f357f1f`(이름 이야기), `68e2c60`(랜드마크 5곳)을 확인했다.
+- 기존 카드 역순, 랜드마크 원본 데이터·사진·펼치기와 날씨 갱신 동작을 유지했다. 카드 발행 정보를 기존 목록과 연결했다.
+- 홈의 미확인 여행 정보 7개에서 우메다 카드로 이동하면 카드 본문으로 스크롤되고 읽음이 DB에 저장되는 것을 확인했다. 홈을 다시 열었을 때 6개가 남고 열지 않은 카드는 유지됐다.
+- 랜드마크 사진 5장이 유지되고 390px 화면에서 가로 넘침이 없음을 확인했다.
+- 테스트 13개·lint·typecheck 통과. 시차가 다른 작성 시각의 실제 시간순 정렬, 종류·구성원별 읽음 구분, 미등록 여행 ID 저장 거부를 회귀 테스트했다.
+- Next.js MCP compilation issues와 runtime errors가 비어 있었으며 React tree에서 HomeDashboard·NewsReadTracker를 확인했다.
+- 여행 정보 kind 추가 migration을 원격 DB에 적용하고 이력을 기록했다. 기존 읽음 기록과 접근 권한은 유지했다. Supabase security advisor의 error 수준 지적 없음.
+- 자동 코드 리뷰 도구가 제공되지 않아 실행하지 못했다. 프로젝트 검증 예산에 따라 재리뷰하지 않았다.

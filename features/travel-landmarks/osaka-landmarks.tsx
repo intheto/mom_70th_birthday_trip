@@ -15,7 +15,7 @@ export function OsakaLandmarks() {
         const mapUrl = `https://www.google.com/maps/search/?${new URLSearchParams({ api: '1', query: landmark.map })}`;
 
         return (
-          <section key={landmark.id} aria-labelledby={`landmark-${landmark.id}`}>
+          <section key={landmark.id} id={`news-${landmark.newsId}`} data-news-id={landmark.newsId} data-news-kind="travel" aria-labelledby={`landmark-${landmark.id}`}>
             <Card className="gap-0 [--card-spacing:--spacing(5)]">
               <CardHeader className="gap-2 pb-4">
                 <div className="flex items-center justify-between gap-2">

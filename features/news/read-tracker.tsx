@@ -12,7 +12,7 @@ export function NewsReadTracker({ save }: { save: (rows: ReadReceipt[]) => Promi
   const [error, setError] = useState('');
   const [attempt, setAttempt] = useState(0);
   useEffect(() => {
-    if (pathname !== '/guestbook' && pathname !== '/preparation') return;
+    if (pathname !== '/guestbook' && pathname !== '/preparation' && pathname !== '/travel') return;
     let disposed = false;
     const recorded = new Set<string>();
     const inflight = new Set<string>();
@@ -23,7 +23,7 @@ export function NewsReadTracker({ save }: { save: (rows: ReadReceipt[]) => Promi
         const element = entry.target as HTMLElement;
         const id = element.dataset.newsId;
         const kind = element.dataset.newsKind;
-        if (!id || (kind !== 'guestbook' && kind !== 'opinion') || !entry.isIntersecting || entry.intersectionRect.height < Math.min(80, entry.boundingClientRect.height * .5)) continue;
+        if (!id || (kind !== 'guestbook' && kind !== 'opinion' && kind !== 'travel') || !entry.isIntersecting || entry.intersectionRect.height < Math.min(80, entry.boundingClientRect.height * .5)) continue;
         const key = `${kind}:${id}`;
         if (recorded.has(key) || inflight.has(key)) continue;
         inflight.add(key); rows.push({ id, kind });
